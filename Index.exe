@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kids English Competition – Level A0</title>
+<style>
+body { font-family: Arial,sans-serif; background:#f0f8ff; padding:20px; text-align:center; }
+.section { background:white; border:2px solid #4CAF50; border-radius:12px; padding:20px; margin:20px auto; max-width:900px; }
+.question { margin:12px 0; }
+button { padding:10px 16px; font-size:16px; margin:5px; cursor:pointer; }
+input { font-size:18px; width:60px; text-align:center; }
+audio { display:block; margin:10px auto; }
+.score { font-size:20px; font-weight:bold; color:#ff5722; }
+</style>
+</head>
+<body>
+
+<h1>Kids English Competition – Level A0</h1>
+<p>Age: 5 years | Starters</p>
+
+<!-- Listening Section -->
+<div class="section">
+<h2>1. Listening</h2>
+<p>Click the speaker 🔊 and choose the correct emoji.</p>
+<div class="question">
+<button onclick="playAudio('banana')">🔊</button><br>
+<span onclick="checkAnswer('🍌',0)" style="font-size:48px; cursor:pointer">🍌</span>
+<span onclick="checkAnswer('🍎',0)" style="font-size:48px; cursor:pointer">🍎</span>
+<span onclick="checkAnswer('🍉',0)" style="font-size:48px; cursor:pointer">🍉</span>
+</div>
+<div class="question">
+<button onclick="playAudio('apple')">🔊</button><br>
+<span onclick="checkAnswer('🍎',1)" style="font-size:48px; cursor:pointer">🍎</span>
+<span onclick="checkAnswer('🍌',1)" style="font-size:48px; cursor:pointer">🍌</span>
+<span onclick="checkAnswer('🍉',1)" style="font-size:48px; cursor:pointer">🍉</span>
+</div>
+</div>
+
+<!-- Writing Section -->
+<div class="section">
+<h2>2. Writing</h2>
+<p>Listen to the letter and type it:</p>
+<p>A <input id="letterA" maxlength="1"></p>
+<p>B <input id="letterB" maxlength="1"></p>
+<p>C <input id="letterC" maxlength="1"></p>
+<button onclick="submitWriting()">Submit</button>
+<p id="writingFeedback"></p>
+</div>
+
+<!-- Speaking Section -->
+<div class="section">
+<h2>3. Speaking</h2>
+<p>Click Record 🎤 to speak, Stop ⏹ to finish, then play your recording.</p>
+
+<div class="question">
+1. What is your favorite color?<br>
+<button onclick="startRecording(this)">🎤 Record</button>
+<button onclick="stopRecording()">⏹ Stop</button>
+<audio controls></audio>
+<p id="feedback1"></p>
+</div>
+
+<div class="question">
+2. What do you want to be in the future?<br>
+<button onclick="startRecording(this)">🎤 Record</button>
+<button onclick="stopRecording()">⏹ Stop</button>
+<audio controls></audio>
+<p id="feedback2"></p>
+</div>
+
+<div class="question">
+3. What is your favorite animal?<br>
+<button onclick="startRecording(this)">🎤 Record</button>
+<button onclick="stopRecording()">⏹ Stop</button>
+<audio controls></audio>
+<p id="feedback3"></p>
+</div>
+
+<div class="question">
+4. What is your favorite subject?<br>
+<button onclick="startRecording(this)">🎤 Record</button>
+<button onclick="stopRecording()">⏹ Stop</button>
+<audio controls></audio>
+<p id="feedback4"></p>
+</div>
+
+<div class="question">
+5. How many seasons in the year do we have?<br>
+<button onclick="startRecording(this)">🎤 Record</button>
+<button onclick="stopRecording()">⏹ Stop</button>
+<audio controls></audio>
+<p id="feedback5"></p>
+</div>
+
+<div class="question">
+6. Who is your favorite friend in school?<br>
+<button onclick="startRecording(this)">🎤 Record</button>
+<button onclick="stopRecording()">⏹ Stop</button>
+<audio controls></audio>
+<p id="feedback6"></p>
+</div>
+
+<div class="question">
+7. What will you do in the weekend?<br>
+<button onclick="startRecording(this)">🎤 Record</button>
+<button onclick="stopRecording()">⏹ Stop</button>
+<audio controls></audio>
+<p id="feedback7"></p>
+</div>
+
+<div class="question">
+8. Who do you like to play with in the playground?<br>
+<button onclick="startRecording(this)">🎤 Record</button>
+<button onclick="stopRecording()">⏹ Stop</button>
+<audio controls></audio>
+<p id="feedback8"></p>
+</div>
+</div>
+
+<!-- Final Score -->
+<div class="section">
+<h2>Final Score</h2>
+<p id="finalScore">Your score will appear here after submission.</p>
+</div>
+
+<script>
+let correctAnswers = ['🍌','🍎'];
+let listeningSelections = [null,null];
+
+function playAudio(word){
+    const u = new SpeechSynthesisUtterance(word);
+    u.lang = 'en-US';
+    speechSynthesis.speak(u);
+}
+
+function checkAnswer(choice,index){
+    listeningSelections[index] = choice;
+    alert(choice === correctAnswers[index] ? "Correct 👍" : "Try again 🙂");
+}
+
+// Writing evaluation simulation
+function submitWriting(){
+    let score = 0;
+    if(document.getElementById('letterA').value.toUpperCase() === 'A') score++;
+    if(document.getElementById('letterB').value.toUpperCase() === 'B') score++;
+    if(document.getElementById('letterC').value.toUpperCase() === 'C') score++;
+    document.getElementById('writingFeedback').innerText = "Writing Score: "+score+"/3";
+    // Play letters as audio
+    ['A','B','C'].forEach(letter=>{
+        let u = new SpeechSynthesisUtterance(letter);
+        u.lang='en-US';
+        speechSynthesis.speak(u);
+    });
+}
+
+// Speaking
+let mediaRecorder;
+let audioChunks = [];
+
+async function startRecording(button){
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = async ()=>{
+        const audioBlob = new Blob(audioChunks,{type:'audio/webm'});
+        const audioURL = URL.createObjectURL(audioBlob);
+        const audioEl = button.parentElement.querySelector('audio');
+        audioEl.src = audioURL;
+        // Simulated AI score feedback
+        const feedbackEl = button.parentElement.querySelector('p');
+        feedbackEl.innerText = "Pronunciation Score: 80% (example, AI scoring here)";
+    };
+    mediaRecorder.start();
+    alert("Recording started 🎤");
+}
+
+function stopRecording(){
+    if(mediaRecorder) mediaRecorder.stop();
+}
+</script>
+</body>
+</html>
